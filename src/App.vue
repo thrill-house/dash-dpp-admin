@@ -1,6 +1,6 @@
 <script>
-import { map, random } from "lodash-es";
-import { mapGetters, mapActions } from "vuex";
+import { map, random, zipObject } from "lodash-es";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "app",
@@ -9,7 +9,7 @@ export default {
   },
   data: () => ({
     // Connection to blockchain
-    address: process.env.VUE_APP_GAME_ADDRESS,
+    address: null,
 
     // Wallet balances
     balance: null,
@@ -24,22 +24,16 @@ export default {
       address: false,
       identity: false,
       balance: false,
-      Sockets: false,
-      Abilities: false,
-      Eras: false,
-      Trees: false,
-      Emotions: false,
     },
   }),
   computed: {
-    documents() {
-      return {
-        Sockets: map(this.Sockets),
-        Abilities: map(this.Abilities),
-        Eras: map(this.Eras),
-        Trees: map(this.Trees),
-        Emotions: map(this.Emotions),
-      };
+    contractDocuments() {
+      return zipObject(
+        this.documents,
+        map(this.documents, (document) => {
+          return map(this.$store.getters[`App/${document}/all`]);
+        })
+      );
     },
     network() {
       return this.options.network;
@@ -53,14 +47,13 @@ export default {
     mnemonic() {
       return this.options.mnemonic;
     },
+    ...mapState({
+      documents: "documents",
+    }),
     ...mapGetters({
       options: "App/options",
       client: "App/client",
-      Sockets: "App/Sockets/all",
-      Abilities: "App/Abilities/all",
-      Eras: "App/Eras/all",
-      Trees: "App/Trees/all",
-      Emotions: "App/Emotions/all",
+      App: "App",
     }),
   },
   methods: {
@@ -198,11 +191,6 @@ export default {
     random,
     ...mapActions({
       init: "init",
-      editSockets: "App/Sockets/multiple",
-      editAbilities: "App/Abilities/multiple",
-      editEras: "App/Eras/multiple",
-      editTrees: "App/Trees/multiple",
-      editEmotions: "App/Emotions/multiple",
     }),
   },
 };
@@ -212,7 +200,7 @@ export default {
   <div class="w-full flex">
     <header class="w-1/5 h-144 flex-none items-top justify-between p-8">
       <div>
-        <h1 class="text-5xl">EmPT.ai</h1>
+        <h1 class="text-5xl">Dash Platform</h1>
         <h2 class="text-2xl">Admin panel</h2>
       </div>
       <dl class="flex flex-wrap items-center max-w-3xl">
@@ -287,7 +275,7 @@ export default {
       <section class="w-full flex">
         <div class="w-1/5">
           <button
-            v-for="(doc, d) in documents"
+            v-for="(doc, d) in contractDocuments"
             :key="d"
             @click="open(d, doc)"
             :class="`button m-2 ${d === document ? 'button-confirm' : ''}`"
