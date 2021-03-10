@@ -23,4 +23,5 @@ module.exports = {
       openAnalyzer: false,
     },
   },
+  transpileDependencies: ["vuetify"],
 };
