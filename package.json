@@ -12,7 +12,6 @@
     "ajv": "^7.2.1",
     "lodash-es": "^4.17.15",
     "roboto-fontface": "*",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "vue": "^3.0.0",
     "vue-localstorage": "^0.6.2",
     "vuetify": "^3.0.0-alpha.0",
@@ -35,9 +34,6 @@
     "eslint-plugin-vue": "^7.7.0",
     "glob": "^7.1.6",
     "jest": "^26.6.3",
-    "postcss": "^7",
-    "sass": "^1.32.0",
-    "sass-loader": "^10.0.4",
     "vue-cli-plugin-vuetify": "~2.2.2",
     "vue-cli-plugin-webpack-bundle-analyzer": "^4.0.0"
   },
