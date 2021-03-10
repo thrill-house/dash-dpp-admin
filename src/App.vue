@@ -1,6 +1,7 @@
 <script>
-import { map, random, zipObject } from "lodash-es";
 import { mapState, mapGetters, mapActions } from "vuex";
+import { map, random, zipObject } from "lodash-es";
+import Ajv from "ajv";
 
 export default {
   name: "app",
@@ -35,6 +36,99 @@ export default {
         })
       );
     },
+    test() {
+      const validate = this.validateDocument("Abilities", {
+        title: "Buzzie",
+        eraId: "11111111111111111111111111111111111111111111",
+        treeId: "11111111111111111111111111111111111111111111",
+        description: "chat buddy",
+        bases: [
+          { base: 1, type: "influence" },
+          { base: 1, type: "bandwidth" },
+        ],
+        costs: [
+          {
+            cost: -21,
+            type: "confidence",
+            multiplier: {
+              conditions: [
+                {
+                  field: "abilityId",
+                  id: "11111111111111111111111111111111111111111111",
+                },
+              ],
+              document: "models",
+            },
+          },
+          {
+            cost: -89,
+            type: "data",
+            multiplier: {
+              conditions: [
+                {
+                  field: "abilityId",
+                  id: "1111111111111111111111111111111111111111111111111",
+                },
+              ],
+              document: "slots",
+            },
+          },
+        ],
+        factors: [
+          {
+            type: "influence",
+            factor: 0.05,
+            dependency: {
+              conditions: [
+                {
+                  field: "treeId",
+                  id: "11111111111111111111111111111111111111111111",
+                },
+                {
+                  field: "abilityId",
+                  id: "11111111111111111111111111111111111111111111",
+                },
+              ],
+              document: "slots",
+            },
+          },
+          {
+            type: "bandwidth",
+            factor: 0.05,
+            dependency: {
+              conditions: [
+                {
+                  field: "eraId",
+                  id: "11111111111111111111111111111111111111111111",
+                },
+                {
+                  field: "abilityId",
+                  id: "11111111111111111111111111111111111111111111",
+                },
+              ],
+              document: "slots",
+            },
+          },
+          {
+            type: "influence",
+            factor: 0.08,
+            dependency: {
+              conditions: [
+                {
+                  field: "abilityId",
+                  id: "11111111111111111111111111111111111111111111",
+                },
+              ],
+              document: "slots",
+            },
+          },
+        ],
+      });
+
+      console.log({ validate });
+
+      return validate;
+    },
     network() {
       return this.options.network;
     },
@@ -49,11 +143,14 @@ export default {
     },
     ...mapState({
       documents: "documents",
+      contract: "contract",
     }),
     ...mapGetters({
       options: "App/options",
       client: "App/client",
       App: "App",
+      schemas: "schemas",
+      validators: "validators",
     }),
   },
   methods: {
@@ -172,6 +269,21 @@ export default {
       }
     },
 
+    validateDocument(document, content) {
+      const schemas = this.schemas;
+
+      if (schemas?.[document]) {
+        const ajv = new Ajv({ strict: false });
+        const validate = ajv.compile(schemas[document]);
+
+        const result = validate(content);
+
+        return { result, errors: validate.errors };
+      }
+
+      return null;
+    },
+
     open(document, data) {
       this.document = document;
       this.field = JSON.stringify(data);
@@ -202,6 +314,7 @@ export default {
       <div>
         <h1 class="text-5xl">Dash Platform</h1>
         <h2 class="text-2xl">Admin panel</h2>
+        {{ test }}
       </div>
       <dl class="flex flex-wrap items-center max-w-3xl">
         <dt class="text-xl w-1/4 border-b border-gray-200">Network</dt>
