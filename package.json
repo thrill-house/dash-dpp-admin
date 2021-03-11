@@ -9,8 +9,10 @@
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
+    "@quasar/extras": "^1.0.0",
     "ajv": "^7.2.1",
     "lodash-es": "^4.17.15",
+    "quasar": "^2.0.0-beta.1",
     "roboto-fontface": "*",
     "vue": "^3.0.0",
     "vue-localstorage": "^0.6.2",
@@ -33,6 +35,8 @@
     "eslint-plugin-vue": "^7.7.0",
     "glob": "^7.1.6",
     "jest": "^26.6.3",
+    "sass": "^1.29.0",
+    "sass-loader": "^10.1.0",
     "vue-cli-plugin-quasar": "^4.0.0-beta.1",
     "vue-cli-plugin-vuetify": "~2.2.2",
     "vue-cli-plugin-webpack-bundle-analyzer": "^4.0.0"

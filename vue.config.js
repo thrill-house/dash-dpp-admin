@@ -22,5 +22,10 @@ module.exports = {
     webpackBundleAnalyzer: {
       openAnalyzer: false,
     },
+    quasar: {
+      importStrategy: "kebab",
+      rtlSupport: false,
+    },
   },
+  transpileDependencies: ["quasar"],
 };
