@@ -1,4 +1,5 @@
 <script>
+import { ref } from "vue";
 import { mapState, mapGetters, mapActions } from "vuex";
 import { map, random, zipObject } from "lodash-es";
 import Ajv from "ajv";
@@ -7,6 +8,16 @@ export default {
   name: "app",
   created() {
     this.init();
+  },
+  setup() {
+    const leftDrawerOpen = ref(false);
+
+    return {
+      leftDrawerOpen,
+      toggleLeftDrawer() {
+        leftDrawerOpen.value = !leftDrawerOpen.value;
+      },
+    };
   },
   data: () => ({
     // Connection to blockchain
@@ -36,99 +47,7 @@ export default {
         })
       );
     },
-    test() {
-      const validate = this.validateDocument("Abilities", {
-        title: "Buzzie",
-        eraId: "11111111111111111111111111111111111111111111",
-        treeId: "11111111111111111111111111111111111111111111",
-        description: "chat buddy",
-        bases: [
-          { base: 1, type: "influence" },
-          { base: 1, type: "bandwidth" },
-        ],
-        costs: [
-          {
-            cost: -21,
-            type: "confidence",
-            multiplier: {
-              conditions: [
-                {
-                  field: "abilityId",
-                  id: "11111111111111111111111111111111111111111111",
-                },
-              ],
-              document: "models",
-            },
-          },
-          {
-            cost: -89,
-            type: "data",
-            multiplier: {
-              conditions: [
-                {
-                  field: "abilityId",
-                  id: "1111111111111111111111111111111111111111111111111",
-                },
-              ],
-              document: "slots",
-            },
-          },
-        ],
-        factors: [
-          {
-            type: "influence",
-            factor: 0.05,
-            dependency: {
-              conditions: [
-                {
-                  field: "treeId",
-                  id: "11111111111111111111111111111111111111111111",
-                },
-                {
-                  field: "abilityId",
-                  id: "11111111111111111111111111111111111111111111",
-                },
-              ],
-              document: "slots",
-            },
-          },
-          {
-            type: "bandwidth",
-            factor: 0.05,
-            dependency: {
-              conditions: [
-                {
-                  field: "eraId",
-                  id: "11111111111111111111111111111111111111111111",
-                },
-                {
-                  field: "abilityId",
-                  id: "11111111111111111111111111111111111111111111",
-                },
-              ],
-              document: "slots",
-            },
-          },
-          {
-            type: "influence",
-            factor: 0.08,
-            dependency: {
-              conditions: [
-                {
-                  field: "abilityId",
-                  id: "11111111111111111111111111111111111111111111",
-                },
-              ],
-              document: "slots",
-            },
-          },
-        ],
-      });
 
-      console.log({ validate });
-
-      return validate;
-    },
     network() {
       return this.options.network;
     },
@@ -309,13 +228,36 @@ export default {
 </script>
 
 <template>
-  <div class="w-full flex">
-    <header class="w-1/5 h-144 flex-none items-top justify-between p-8">
-      <div>
-        <h1 class="text-5xl">Dash Platform</h1>
-        <h2 class="text-2xl">Admin panel</h2>
-        {{ test }}
-      </div>
+  <q-layout view="lHr lpR lFr">
+    <q-header class="bg-primary text-white" height-hint="98">
+      <q-toolbar>
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+
+        <q-toolbar-title>
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg" />
+          </q-avatar>
+          Title
+        </q-toolbar-title>
+      </q-toolbar>
+
+      <q-tabs align="left">
+        <q-route-tab to="/page1" label="Page One" />
+        <q-route-tab to="/page2" label="Page Two" />
+        <q-route-tab to="/page3" label="Page Three" />
+      </q-tabs>
+    </q-header>
+
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+      <!-- drawer content -->
+    </q-drawer>
+
+    <q-page-container>
+      <router-view />
+    </q-page-container>
+  </q-layout>
+  <v-app>
+    <v-navigation-drawer app>
       <dl class="flex flex-wrap items-center max-w-3xl">
         <dt class="text-xl w-1/4 border-b border-gray-200">Network</dt>
         <dd class="w-3/4 p-1">
@@ -370,43 +312,41 @@ export default {
           <span v-if="balance" class="mr-4">
             <output class="text-xl">{{ balance }}</output> Dash
           </span>
-          <button
+          <v-btn
             class="button"
             :disabled="loading.balance"
             @click="retrieveBalance"
             v-if="mnemonic && identity"
           >
             {{ balance ? "Refresh" : "Retrieve" }} balance
-          </button>
+          </v-btn>
         </dd>
       </dl>
-    </header>
-    <main
-      id="main"
-      class="flex flex-1 self-stretch w-4/5 h-full justify-center items-stretch"
-    >
-      <section class="w-full flex">
-        <div class="w-1/5">
-          <button
-            v-for="(doc, d) in contractDocuments"
-            :key="d"
-            @click="open(d, doc)"
-            :class="`button m-2 ${d === document ? 'button-confirm' : ''}`"
-          >
-            {{ d }}
-          </button>
-          <pre>{{ loading }}</pre>
-        </div>
-        <div class="w-4/5 h-screen">
-          <textarea class="h-full w-full -mb-16 text-dark" v-model="field" />
-          <button
-            @click="saveDocument(document, field)"
-            class="button button-confirm absolute right-4"
-          >
-            Save changes
-          </button>
-        </div>
-      </section>
-    </main>
-  </div>
+    </v-navigation-drawer>
+    <v-app-bar>
+      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <v-toolbar-title>Title</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn
+        v-for="(doc, d) in contractDocuments"
+        :key="d"
+        @click="open(d, doc)"
+      >
+        <v-icon>mdi-heart</v-icon>
+        {{ d }}
+      </v-btn>
+    </v-app-bar>
+    <v-main>
+      <v-container fluid>
+        <pre>{{ loading }}</pre>
+        <v-textarea class="h-full w-full -mb-16 text-dark" v-model="field" />
+        <button
+          @click="saveDocument(document, field)"
+          class="button button-confirm absolute right-4"
+        >
+          Save changes
+        </button>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
