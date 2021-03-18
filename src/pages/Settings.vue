@@ -1,24 +1,10 @@
 <script>
-import { ref } from "vue";
 import { mapState, mapGetters, mapActions } from "vuex";
-import { map, random, zipObject } from "lodash-es";
+import { map, random } from "lodash-es";
 import Ajv from "ajv";
 
 export default {
-  name: "app",
-  created() {
-    this.init();
-  },
-  setup() {
-    const leftDrawerOpen = ref(false);
-
-    return {
-      leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
-    };
-  },
+  name: "settings",
   data: () => ({
     // Connection to blockchain
     address: null,
@@ -26,28 +12,8 @@ export default {
     // Wallet balances
     balance: null,
     credit: null,
-
-    // Editing
-    document: "",
-    field: "",
-
-    // Loading states
-    loading: {
-      address: false,
-      identity: false,
-      balance: false,
-    },
   }),
   computed: {
-    contractDocuments() {
-      return zipObject(
-        this.documents,
-        map(this.documents, (document) => {
-          return map(this.$store.getters[`App/${document}/all`]);
-        })
-      );
-    },
-
     network() {
       return this.options.network;
     },
@@ -66,10 +32,6 @@ export default {
     }),
     ...mapGetters({
       options: "App/options",
-      client: "App/client",
-      App: "App",
-      schemas: "schemas",
-      validators: "validators",
     }),
   },
   methods: {
@@ -228,41 +190,59 @@ export default {
 </script>
 
 <template>
-  <q-layout view="lHr lpR lFr">
-    <q-header class="bg-primary text-white" height-hint="98">
-      <q-toolbar>
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
-        <q-toolbar-title> Dash Platform Admin </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
-      <q-scroll-area class="fit">
-        <q-list>
-          <template v-for="document in documents" :key="document">
-            <q-item
-              :to="`/contract/${contractId}/${document}`"
-              clickable
-              v-ripple
-            >
-              <q-item-section avatar top>
-                <q-icon name="folder" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label> {{ document }} </q-item-label>
-              </q-item-section>
-            </q-item>
-          </template>
-          <q-separator /><q-item :to="`/settings`" clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="settings" />
-            </q-item-section>
-            <q-item-section> Settings </q-item-section>
-          </q-item>
-        </q-list>
-      </q-scroll-area>
-    </q-drawer>
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+  <q-page>
+    <q-select
+      v-model="network"
+      label="Network"
+      :options="[
+        { label: 'Testnet', value: 'testnet' },
+        { label: 'Livenet', value: 'livenet' },
+      ]"
+    />
+
+    <q-input v-model="contractId" label="Contract ID" />
+
+    <q-input v-model="mnemonic" label="Mnemonic" />
+    <button v-if="!mnemonic" class="button" @click="createWallet">
+      Create
+    </button>
+
+    <q-input v-model="address" label="Address" />
+    <button v-if="!address" class="button" @click="retrieveAddress">
+      Retrieve
+    </button>
+
+    <q-input v-model="identityId" label="Identity ID" />
+    <!-- <button
+      class="button"
+      :disabled="loading.identity"
+      @click="retrieveIdentity"
+      v-if="mnemonic && !identityId"
+    >
+      Retrieve
+    </button> -->
+    <!-- <button
+      class="button"
+      :disabled="loading.identity"
+      @click="registerIdentity"
+      v-if="mnemonic && !identityId"
+    >
+      Register
+    </button> -->
+
+    <span v-if="credit">
+      <output class="text-xl">{{ credit }}</output> Credits |
+    </span>
+    <span v-if="balance" class="mr-4">
+      <output class="text-xl">{{ balance }}</output> Dash
+    </span>
+    <q-btn
+      class="button"
+      :disabled="loading.balance"
+      @click="retrieveBalance"
+      v-if="mnemonic && identity"
+    >
+      {{ balance ? "Refresh" : "Retrieve" }} balance
+    </q-btn>
+  </q-page>
 </template>
