@@ -17,11 +17,7 @@ const routes = [
     component: Documents,
   },
   {
-    path: "/contract/:contractId/:document/new",
-    component: Edit,
-  },
-  {
-    path: "/contract/:contractId/:document/:id",
+    path: "/contract/:contractId/:document/:verb/:id?",
     component: Edit,
   },
 ];
