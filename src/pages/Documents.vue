@@ -38,9 +38,9 @@ export default {
 </script>
 
 <template>
-  <q-page>
+  <q-page padding>
     <q-table
-      title="Documents"
+      flat
       :rows="rows"
       :columns="columns"
       selection="single"

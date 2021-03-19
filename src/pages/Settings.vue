@@ -190,7 +190,7 @@ export default {
 </script>
 
 <template>
-  <q-page>
+  <q-page padding>
     <q-select
       v-model="network"
       label="Network"

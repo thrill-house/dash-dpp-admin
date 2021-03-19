@@ -5,5 +5,5 @@ export default {
 </script>
 
 <template>
-  <q-page> Contract page </q-page>
+  <q-page padding> Contract page </q-page>
 </template>
