@@ -1,11 +1,13 @@
 require("dotenv").config();
 
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+
 module.exports = {
   pages: {
     index: "src/main.js",
   },
   configureWebpack: {
-    devtool: "source-map",
+    plugins: [new NodePolyfillPlugin()],
     resolve: {
       /*
        ** Emptying aliasFields is required so that the "browser" definition in the bn.js package is ignored.
@@ -16,6 +18,9 @@ module.exports = {
        ** https://github.com/indutny/bn.js/blob/master/package.json
        */
       aliasFields: [],
+      fallback: {
+        fs: false,
+      },
     },
   },
   pluginOptions: {
