@@ -229,7 +229,7 @@ export default {
 
 <template>
   <q-layout view="lHr lpR lFr">
-    <q-header class="bg-primary text-white" height-hint="98">
+    <q-header class="bg-primary text-white">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
         <q-toolbar-title> Dash Platform Admin </q-toolbar-title>
@@ -252,7 +252,8 @@ export default {
               </q-item-section>
             </q-item>
           </template>
-          <q-separator /><q-item :to="`/settings`" clickable v-ripple>
+          <q-separator />
+          <q-item :to="`/settings`" clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="settings" />
             </q-item-section>
